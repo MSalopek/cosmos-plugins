@@ -8,6 +8,8 @@
 *.so
 *.dylib
 
+cmd/storechanges/storechanges
+
 # Test binary, built with `go test -c`
 *.test
 
