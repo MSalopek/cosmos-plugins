@@ -45,7 +45,7 @@ func (a *FilePlugin) ListenCommit(ctx context.Context, res abci.ResponseCommit, 
 		return err
 	}
 
-	if err := a.writeLengthPrefixedFile(fmt.Sprintf("block-%d-header", block.Header.Height), bz); err != nil {
+	if err := a.writeData(fmt.Sprintf("block-%d-header", block.Header.Height), bz); err != nil {
 		return err
 	}
 
@@ -54,7 +54,7 @@ func (a *FilePlugin) ListenCommit(ctx context.Context, res abci.ResponseCommit, 
 		return err
 	}
 
-	if err := a.writeLengthPrefixedFile(fmt.Sprintf("block-%d-data", block.Header.Height), blockDataBuf.Bytes()); err != nil {
+	if err := a.writeData(fmt.Sprintf("block-%d-data", block.Header.Height), blockDataBuf.Bytes()); err != nil {
 		return err
 	}
 
@@ -76,29 +76,22 @@ func (a *FilePlugin) writeBlockData(writer io.Writer, kps []*store.StoreKVPair) 
 	return nil
 }
 
-func (a *FilePlugin) writeLengthPrefixedFile(fname string, data []byte) (err error) {
+func (a *FilePlugin) writeData(fname string, data []byte) error {
 	fpath := fmt.Sprintf("%s/%s", a.StreamingDir, fname)
 
 	var f *os.File
-	f, err = os.OpenFile(fpath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0o600)
+	f, err := os.OpenFile(fpath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0o600)
 	if err != nil {
-		return errors.Wrapf(err, "open file failed: %s", fpath)
+		return errors.Wrapf(err, "could not open file: %s", fpath)
+	}
+	defer f.Close()
+
+	if _, err = f.Write(store.Uint64ToBigEndian(uint64(len(data)))); err != nil {
+		return errors.Wrapf(err, "could not write len prefix: %s", fpath)
 	}
 
-	defer func() {
-		// avoid overriding the real error with file close error
-		if err1 := f.Close(); err1 != nil && err == nil {
-			err = errors.Wrapf(err, "close file failed: %s", fpath)
-		}
-	}()
-	_, err = f.Write(store.Uint64ToBigEndian(uint64(len(data))))
-	if err != nil {
-		return errors.Wrapf(err, "write length prefix failed: %s", fpath)
-	}
-
-	_, err = f.Write(data)
-	if err != nil {
-		return errors.Wrapf(err, "write block data failed: %s", fpath)
+	if _, err = f.Write(data); err != nil {
+		return errors.Wrapf(err, "could not write data: %s", fpath)
 	}
 
 	return err
