@@ -45,7 +45,7 @@ func (a *FilePlugin) ListenCommit(ctx context.Context, res abci.ResponseCommit, 
 		return err
 	}
 
-	if err := writeLengthPrefixedFile(fmt.Sprintf("block-%d-header", block.Header.Height), bz); err != nil {
+	if err := a.writeLengthPrefixedFile(fmt.Sprintf("block-%d-header", block.Header.Height), bz); err != nil {
 		return err
 	}
 
@@ -54,7 +54,7 @@ func (a *FilePlugin) ListenCommit(ctx context.Context, res abci.ResponseCommit, 
 		return err
 	}
 
-	if err := writeLengthPrefixedFile(fmt.Sprintf("block-%d-data", block.Header.Height), blockDataBuf.Bytes()); err != nil {
+	if err := a.writeLengthPrefixedFile(fmt.Sprintf("block-%d-data", block.Header.Height), blockDataBuf.Bytes()); err != nil {
 		return err
 	}
 
@@ -76,14 +76,8 @@ func (a *FilePlugin) writeBlockData(writer io.Writer, kps []*store.StoreKVPair) 
 	return nil
 }
 
-func writeLengthPrefixedFile(fname string, data []byte) (err error) {
-	home, err := os.UserHomeDir()
-	if err != nil {
-		return err
-	}
-
-	streamingDir := fmt.Sprintf("%s/.cosmos-streaming/dydx", home)
-	fpath := fmt.Sprintf("%s/%s", streamingDir, fname)
+func (a *FilePlugin) writeLengthPrefixedFile(fname string, data []byte) (err error) {
+	fpath := fmt.Sprintf("%s/%s", a.StreamingDir, fname)
 
 	var f *os.File
 	f, err = os.OpenFile(fpath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0o600)
@@ -123,8 +117,7 @@ func main() {
 			panic(fmt.Sprintf("error getting home directory: %s", err))
 		}
 		streamingDir = path.Join(home, ".storechanges")
-		err = os.Mkdir(streamingDir, 0o755)
-		if err != nil {
+		if err := os.MkdirAll(streamingDir, 0o755); err != nil {
 			panic(fmt.Sprintf("error creating streaming directory: %s", err))
 		}
 	}

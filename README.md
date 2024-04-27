@@ -20,13 +20,13 @@ You must compile the plugin before use and configure your cosmos-sdk node (`simd
 ```shell
 ## build
 cd cosmos-plugins
-go build -o storechanges storechanges.go
+go build -o ./cmd/storechanges/storechanges ./cmd/storechanges/main.go
 
 # move it if you want
 # mv storechanges <path>
 
 ## export path to plugin so the chain app can find it
-export COSMOS_SDK_ABCI="<abs_path_to_parent_dir>/storechanges"
+export COSMOS_SDK_ABCI="<abs_path_to_parent_dir>/cmd/storechanges/"
 ```
 
 Configuring your node:
