@@ -8,8 +8,8 @@ Implements `ABCIListener`.
 Allows saving `StoreKVPair` and the cometBFT header to a file for further processing.
 ```go
 type ABCIListener interface {
-	ListenFinalizeBlock(ctx context.Context, req abci.RequestFinalizeBlock, res abci.ResponseFinalizeBlock) error
-	ListenCommit(ctx context.Context, res abci.ResponseCommit, changeSet []*StoreKVPair) error
+  ListenFinalizeBlock(ctx context.Context, req abci.RequestFinalizeBlock, res abci.ResponseFinalizeBlock) error
+  ListenCommit(ctx context.Context, res abci.ResponseCommit, changeSet []*StoreKVPair) error
 }
 ```
 
@@ -84,28 +84,28 @@ If your node does not register streaming listeners you will need to add this sni
 ```diff
 // app/app.go
 func NewSimApp(
-	logger log.Logger,
-	db dbm.DB,
-	traceStore io.Writer,
-	loadLatest bool,
-	appOpts servertypes.AppOptions,
-	baseAppOptions ...func(*baseapp.BaseApp),
+  logger log.Logger,
+  db dbm.DB,
+  traceStore io.Writer,
+  loadLatest bool,
+  appOpts servertypes.AppOptions,
+  baseAppOptions ...func(*baseapp.BaseApp),
 ) *SimApp {
-    // ...
+  // ...
 
-	keys := storetypes.NewKVStoreKeys(
-		authtypes.StoreKey, banktypes.StoreKey, stakingtypes.StoreKey, crisistypes.StoreKey,
-		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
-		govtypes.StoreKey, paramstypes.StoreKey, consensusparamtypes.StoreKey, upgradetypes.StoreKey, feegrant.StoreKey,
-		evidencetypes.StoreKey, circuittypes.StoreKey,
-		authzkeeper.StoreKey, nftkeeper.StoreKey, group.StoreKey,
-	)
+  keys := storetypes.NewKVStoreKeys(
+    authtypes.StoreKey, banktypes.StoreKey, stakingtypes.StoreKey, crisistypes.StoreKey,
+    minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
+    govtypes.StoreKey, paramstypes.StoreKey, consensusparamtypes.StoreKey, upgradetypes.StoreKey, feegrant.StoreKey,
+    evidencetypes.StoreKey, circuittypes.StoreKey,
+    authzkeeper.StoreKey, nftkeeper.StoreKey, group.StoreKey,
+)
 
-+	// register streaming services
-+	if err := bApp.RegisterStreamingServices(appOpts, keys); err != nil {
-+		panic(err)
-+	}
++  // register streaming services
++  if err := bApp.RegisterStreamingServices(appOpts, keys); err != nil {
++    panic(err)
++  }
     
-    // ...
+   // ...
 }
 ```
