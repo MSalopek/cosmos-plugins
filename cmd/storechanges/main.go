@@ -117,9 +117,9 @@ func main() {
 			panic(fmt.Sprintf("error getting home directory: %s", err))
 		}
 		streamingDir = path.Join(home, ".storechanges")
-		if err := os.MkdirAll(streamingDir, 0o755); err != nil {
-			panic(fmt.Sprintf("error creating streaming directory: %s", err))
-		}
+	}
+	if err := os.MkdirAll(streamingDir, 0o755); err != nil {
+		panic(fmt.Sprintf("error creating streaming directory: %s", err))
 	}
 
 	reg := codectypes.NewInterfaceRegistry()
