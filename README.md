@@ -13,6 +13,8 @@ type ABCIListener interface {
 }
 ```
 
+This tool requires access to a cometBFT node via RPC. It cannot function without one.
+
 ### Usage
 
 You must compile the plugin before use and configure your cosmos-sdk node (`simd` or other) to use your plugin.
