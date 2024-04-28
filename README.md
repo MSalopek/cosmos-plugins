@@ -28,7 +28,7 @@ go build -o ./cmd/storechanges/storechanges ./cmd/storechanges/main.go
 # mv storechanges <path>
 
 ## export path to plugin so the chain app can find it
-export COSMOS_SDK_ABCI="<abs_path_to_parent_dir>/cmd/storechanges/"
+export COSMOS_SDK_ABCI="<abs_path_to_parent_dir>/cmd/storechanges/storechanges"
 ```
 
 Configuring your node:
